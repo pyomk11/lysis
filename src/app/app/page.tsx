@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import Link from "next/link";
 import type { ChatMessage, ExecutionResult } from "@/types";
 import Editor from "@/components/Editor";
 import Chat from "@/components/Chat";
@@ -133,7 +134,7 @@ export default function Home() {
     <div className="flex flex-col h-screen bg-bg text-ink">
       {/* 헤더 */}
       <header className="flex items-center justify-between px-5 h-14 border-b border-line bg-bg shrink-0">
-        <div className="flex items-center gap-2.5">
+        <Link href="/" className="flex items-center gap-2.5 hover:opacity-75 transition-opacity">
           {/* λ 로고 */}
           <svg width="24" height="24" viewBox="0 0 120 120" aria-hidden="true">
             <path
@@ -165,7 +166,7 @@ export default function Home() {
           <span className="text-xs text-ink-soft ml-1 hidden sm:inline">
             답 대신, 질문을.
           </span>
-        </div>
+        </Link>
 
         {/* 다크모드 토글 */}
         <button

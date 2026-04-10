@@ -5,12 +5,12 @@ import "./landing.css";
 import {
   GraduationCap, ClipboardCopy, Repeat, Hand, EyeOff,
   Zap, MessageCircle, SlidersHorizontal, ShieldCheck, TrendingUp,
-  BarChart3, HelpCircle,
+  BarChart3,
 } from "lucide-react";
 
 export default function LandingPage() {
   return (
-    <>
+    <div className="landing">
       {/* NAV */}
       <nav>
         <div className="container nav-inner">
@@ -39,7 +39,7 @@ export default function LandingPage() {
           <h1>답 대신,<br/><em className="accent-ink">질문을 드릴게요.</em></h1>
           <p className="lead">
             복붙해서 넘어가는 대신, 스스로 풀어내는 힘을 기릅니다.<br/>
-            Lysis는 프로그래밍 수업에서 교수자와 학생 모두를 위한 소크라테스식 AI 교육 도구입니다.
+            Lysis는 프로그래밍 수업에서 교수자와 학생 모두를 위한 <strong>소크라테스식 AI 교육 도구</strong>입니다.
           </p>
           <div className="hero-ctas">
             <Link href="/app" className="btn btn-primary">지금 막힌 코드, 가져와 보세요 →</Link>
@@ -54,7 +54,7 @@ export default function LandingPage() {
               <p className="who">Lysis</p>
               <div className="bubble lysis">
                 답을 바로 드리지는 않을게요. 대신 같이 생각해볼까요?<br/>
-                지금 적으신 코드에서 <strong>&ldquo;중복&rdquo;이 무엇을 뜻하는지</strong>, 파이썬이 어떻게 판단할 것 같아요? <HelpCircle size={16} style={{display:"inline",verticalAlign:"-2px"}} />
+                지금 적으신 코드에서 <strong>&ldquo;중복&rdquo;이 무엇을 뜻하는지</strong>, 파이썬이 어떻게 판단할 것 같아요?
               </div>
             </div>
           </div>
@@ -186,6 +186,6 @@ export default function LandingPage() {
           <div>© 2026 Lysis · 2026 KIT 바이브코딩 공모전 출품작</div>
         </div>
       </footer>
-    </>
+    </div>
   );
 }

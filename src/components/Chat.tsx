@@ -113,8 +113,12 @@ export default function Chat({ messages, isLoading, onSendMessage }: ChatProps) 
       {/* 빈 상태일 때만 보이는 안내 — 입력창 바로 위 */}
       {messages.length === 0 && !isLoading && (
         <div className="flex-1 flex flex-col items-center justify-center text-center px-8 pb-4">
-          <div className="text-3xl mb-3">🪢</div>
-          <p className="text-ink font-semibold mb-1">안녕하세요! Lysis예요.</p>
+          <svg width="36" height="36" viewBox="0 0 120 120" className="mb-3" aria-hidden="true">
+            <path d="M 60 42 L 30 98" fill="none" stroke="currentColor" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" className="text-ink"/>
+            <path d="M 60 42 L 90 98" fill="none" stroke="currentColor" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" className="text-ink"/>
+            <path d="M 60 42 C 55 28, 42 18, 32 22" fill="none" stroke="#E8834B" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          <p className="text-ink font-semibold mb-1">안녕하세요! Lysis에요.</p>
           <p className="text-ink-soft text-sm leading-relaxed max-w-xs">
             코드를 작성하고 실행해본 뒤, 막히는 부분을 물어보세요.
           </p>

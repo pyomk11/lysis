@@ -26,6 +26,15 @@ export default function Editor({ value, onChange, isDark = false }: EditorProps)
       value={value}
       onChange={(val) => onChange(val || "")}
       theme={isDark ? "vs-dark" : "vs-light"}
+      onMount={(editor) => {
+        // flex 컨테이너 높이가 확정된 뒤 레이아웃 재계산
+        const container = editor.getContainerDomNode().parentElement;
+        if (container) {
+          const observer = new ResizeObserver(() => editor.layout());
+          observer.observe(container);
+        }
+        setTimeout(() => editor.layout(), 50);
+      }}
       options={{
         fontSize: 14,
         fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
