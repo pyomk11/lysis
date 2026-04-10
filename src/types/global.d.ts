@@ -12,6 +12,18 @@ declare module "lucide-react" {
   export const Send: FC<IconProps>;
   export const Moon: FC<IconProps>;
   export const Sun: FC<IconProps>;
+  export const GraduationCap: FC<IconProps>;
+  export const ClipboardCopy: FC<IconProps>;
+  export const Repeat: FC<IconProps>;
+  export const Hand: FC<IconProps>;
+  export const EyeOff: FC<IconProps>;
+  export const Zap: FC<IconProps>;
+  export const MessageCircle: FC<IconProps>;
+  export const SlidersHorizontal: FC<IconProps>;
+  export const ShieldCheck: FC<IconProps>;
+  export const TrendingUp: FC<IconProps>;
+  export const BarChart3: FC<IconProps>;
+  export const HelpCircle: FC<IconProps>;
 }
 
 // Pyodide는 <script> 태그로 로드되어 window.loadPyodide에 할당됨
