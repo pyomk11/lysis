@@ -3,24 +3,25 @@
 @tailwind utilities;
 
 @layer base {
+  /* RGB 트리플렛 형식 — Tailwind가 rgb(var(--bg)) 형태로 참조 */
   :root {
-    --bg: #FBF9F6;
-    --bg-soft: #F4EFE8;
-    --ink: #2B2B2B;
-    --ink-soft: #6B6863;
-    --accent: #E8834B;
-    --accent-soft: #FBE4D4;
-    --line: #E8E2D8;
+    --bg:          251 249 246;
+    --bg-soft:     244 239 232;
+    --ink:          43  43  43;
+    --ink-soft:    107 104  99;
+    --accent:      232 131  75;
+    --accent-soft: 251 228 212;
+    --line:        232 226 216;
   }
 
   .dark {
-    --bg: #1A1917;
-    --bg-soft: #242220;
-    --ink: #F0EDE8;
-    --ink-soft: #9B9690;
-    --accent: #E8834B;
-    --accent-soft: #3A2318;
-    --line: #2E2C29;
+    --bg:           26  25  23;
+    --bg-soft:      36  34  32;
+    --ink:         240 237 232;
+    --ink-soft:    155 150 144;
+    --accent:      232 131  75;
+    --accent-soft:  58  35  24;
+    --line:         46  44  41;
   }
 
   html {
@@ -29,7 +30,7 @@
   }
 
   body {
-    background-color: var(--bg);
-    color: var(--ink);
+    background-color: rgb(var(--bg));
+    color: rgb(var(--ink));
   }
 }

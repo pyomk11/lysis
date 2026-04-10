@@ -144,9 +144,9 @@ export default function LandingPage() {
         <div className="container nav-inner">
           <a href="#top" className="brand">
             <svg width="32" height="32" viewBox="0 0 120 120" aria-hidden="true">
-              <path d="M 60 42 L 30 98" fill="none" stroke="#2B2B2B" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M 60 42 L 90 98" fill="none" stroke="#2B2B2B" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M 60 42 C 55 28, 42 18, 32 22" fill="none" stroke="#E8834B" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M 60 42 L 30 98" fill="none" stroke="#2B2B2B" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M 60 42 L 90 98" fill="none" stroke="#2B2B2B" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M 60 42 C 55 28, 42 18, 32 22" fill="none" stroke="#E8834B" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
             <span className="brand-text">Lysis</span>
           </a>

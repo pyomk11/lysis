@@ -10,14 +10,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // CSS 변수 참조 — dark 클래스 토글만으로 자동 전환
-        bg: "var(--bg)",
-        "bg-soft": "var(--bg-soft)",
-        ink: "var(--ink)",
-        "ink-soft": "var(--ink-soft)",
-        accent: "var(--accent)",
-        "accent-soft": "var(--accent-soft)",
-        line: "var(--line)",
+        // rgb(var(--xx)) 형식 — CSS 변수 다크모드와 완벽 호환
+        bg:            "rgb(var(--bg))",
+        "bg-soft":     "rgb(var(--bg-soft))",
+        ink:           "rgb(var(--ink))",
+        "ink-soft":    "rgb(var(--ink-soft))",
+        accent:        "rgb(var(--accent))",
+        "accent-soft": "rgb(var(--accent-soft))",
+        line:          "rgb(var(--line))",
       },
       fontFamily: {
         sans: [

@@ -139,16 +139,16 @@ export default function Home() {
             <path
               d="M 60 42 L 30 98"
               fill="none"
-              stroke="var(--ink)"
-              strokeWidth="8"
+              stroke={`rgb(${isDark ? "240 237 232" : "43 43 43"})`}
+              strokeWidth="10"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
             <path
               d="M 60 42 L 90 98"
               fill="none"
-              stroke="var(--ink)"
-              strokeWidth="8"
+              stroke={`rgb(${isDark ? "240 237 232" : "43 43 43"})`}
+              strokeWidth="10"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
@@ -156,7 +156,7 @@ export default function Home() {
               d="M 60 42 C 55 28, 42 18, 32 22"
               fill="none"
               stroke="#E8834B"
-              strokeWidth="8"
+              strokeWidth="10"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
@@ -181,7 +181,7 @@ export default function Home() {
       {/* 메인 콘텐츠 — 에디터(좌) + 채팅(우) */}
       <main className="flex flex-1 overflow-hidden">
         {/* 왼쪽 패널: 에디터 + 출력 */}
-        <div className="flex flex-col w-1/2 border-r border-line">
+        <div className="flex flex-col w-1/2 border-r border-line overflow-hidden">
           {/* 에디터 툴바 */}
           <div className="flex items-center gap-2 px-4 h-10 border-b border-line bg-bg-soft shrink-0">
             <span className="text-xs text-ink-soft font-medium">main.py</span>
@@ -205,7 +205,7 @@ export default function Home() {
           </div>
 
           {/* Monaco 에디터 */}
-          <div className="flex-1 min-h-0">
+          <div className="flex-1 min-h-0 overflow-hidden">
             <Editor value={code} onChange={setCode} isDark={isDark} />
           </div>
 
