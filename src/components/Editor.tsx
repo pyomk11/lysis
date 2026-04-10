@@ -15,16 +15,17 @@ const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
 interface EditorProps {
   value: string;
   onChange: (value: string) => void;
+  isDark?: boolean;
 }
 
-export default function Editor({ value, onChange }: EditorProps) {
+export default function Editor({ value, onChange, isDark = false }: EditorProps) {
   return (
     <MonacoEditor
       height="100%"
       defaultLanguage="python"
       value={value}
       onChange={(val) => onChange(val || "")}
-      theme="vs-light"
+      theme={isDark ? "vs-dark" : "vs-light"}
       options={{
         fontSize: 14,
         fontFamily: "'JetBrains Mono', 'Fira Code', monospace",

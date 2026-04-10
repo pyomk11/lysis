@@ -1,13 +1,42 @@
 /**
  * Pyodide (브라우저 내 Python 실행) 래퍼
  * 클라이언트 사이드에서만 사용 가능
+ *
+ * Next.js는 외부 URL dynamic import를 지원하지 않으므로,
+ * <script> 태그로 Pyodide를 로드하고 window.loadPyodide를 사용한다.
  */
 
 import type { ExecutionResult } from "@/types";
 
-// Pyodide 타입 (런타임에서 동적 로드)
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let pyodideInstance: any = null;
+let loadingPromise: Promise<void> | null = null;
+
+const PYODIDE_CDN = "https://cdn.jsdelivr.net/pyodide/v0.26.4/full";
+
+/**
+ * <script> 태그로 Pyodide CDN 스크립트를 로드한다.
+ */
+function loadPyodideScript(): Promise<void> {
+  if (loadingPromise) return loadingPromise;
+
+  loadingPromise = new Promise((resolve, reject) => {
+    // 이미 로드된 경우
+    if ((window as any).loadPyodide) {
+      resolve();
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = `${PYODIDE_CDN}/pyodide.js`;
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("Pyodide 스크립트 로드 실패"));
+    document.head.appendChild(script);
+  });
+
+  return loadingPromise;
+}
 
 /**
  * Pyodide 인스턴스를 초기화하고 반환한다.
@@ -16,14 +45,15 @@ let pyodideInstance: any = null;
 export async function getPyodide() {
   if (pyodideInstance) return pyodideInstance;
 
-  // CDN에서 Pyodide 로드
-  // @ts-expect-error - Pyodide는 스크립트 태그로 로드되지 않고 동적 import
-  const { loadPyodide } = await import(
-    "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.mjs"
-  );
+  await loadPyodideScript();
+
+  const loadPyodide = (window as any).loadPyodide;
+  if (!loadPyodide) {
+    throw new Error("Pyodide가 로드되지 않았습니다.");
+  }
 
   pyodideInstance = await loadPyodide({
-    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/",
+    indexURL: `${PYODIDE_CDN}/`,
   });
 
   return pyodideInstance;

@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: "class",
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,13 +10,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        bg: "#FBF9F6",
-        "bg-soft": "#F4EFE8",
-        ink: "#2B2B2B",
-        "ink-soft": "#6B6863",
-        accent: "#E8834B",
-        "accent-soft": "#FBE4D4",
-        line: "#E8E2D8",
+        // CSS 변수 참조 — dark 클래스 토글만으로 자동 전환
+        bg: "var(--bg)",
+        "bg-soft": "var(--bg-soft)",
+        ink: "var(--ink)",
+        "ink-soft": "var(--ink-soft)",
+        accent: "var(--accent)",
+        "accent-soft": "var(--accent-soft)",
+        line: "var(--line)",
       },
       fontFamily: {
         sans: [

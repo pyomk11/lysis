@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { guardrailModel, mainModel } from "@/lib/gemini";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import {
   GUARDRAIL_PROMPT,
   DIAGNOSTICIAN_PROMPT,
@@ -7,7 +7,7 @@ import {
 } from "@/lib/prompts";
 import type { GuardrailResult, Diagnosis, ChatMessage } from "@/types";
 
-export const runtime = "edge";
+// Edge Runtime 제거 — Node.js Runtime 사용 (Gemini SDK 호환)
 
 /**
  * POST /api/chat
@@ -15,6 +15,20 @@ export const runtime = "edge";
  */
 export async function POST(request: NextRequest) {
   try {
+    // API 키 확인
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      console.error("GEMINI_API_KEY가 설정되지 않았습니다.");
+      return NextResponse.json(
+        { error: "API 키가 설정되지 않았습니다. .env.local을 확인하세요." },
+        { status: 500 }
+      );
+    }
+
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const mainModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const guardrailModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+
     const body = await request.json();
     const { message, code, executionResult, history } = body as {
       message: string;
@@ -31,24 +45,9 @@ export async function POST(request: NextRequest) {
     }
 
     // ─── 1단계: 가드레일 ───
-    const guardrailChat = guardrailModel.startChat({
-      history: [{ role: "user", parts: [{ text: GUARDRAIL_PROMPT }] }],
-    });
+    console.log("[1/3] 가드레일 시작...");
 
-    const guardrailResponse = await guardrailChat.sendMessage(message);
-    const guardrailText = guardrailResponse.response.text();
-
-    let guardrailResult: GuardrailResult;
-    try {
-      // JSON 블록 추출 (```json ... ``` 또는 순수 JSON)
-      const jsonMatch = guardrailText.match(/\{[\s\S]*\}/);
-      guardrailResult = jsonMatch
-        ? JSON.parse(jsonMatch[0])
-        : { allowed: true };
-    } catch {
-      // 파싱 실패 시 허용 (false positive보다 false negative가 나음)
-      guardrailResult = { allowed: true };
-    }
+    const guardrailResult = await runGuardrail(guardrailModel, message);
 
     if (!guardrailResult.allowed) {
       return NextResponse.json({
@@ -59,6 +58,8 @@ export async function POST(request: NextRequest) {
     }
 
     // ─── 2단계: 진단 에이전트 ───
+    console.log("[2/3] 진단 시작...");
+
     const contextParts = [
       `학생 메시지: ${message}`,
       code ? `학생 코드:\n\`\`\`python\n${code}\n\`\`\`` : "",
@@ -67,67 +68,19 @@ export async function POST(request: NextRequest) {
       .filter(Boolean)
       .join("\n\n");
 
-    const diagChat = mainModel.startChat({
-      history: [{ role: "user", parts: [{ text: DIAGNOSTICIAN_PROMPT }] }],
-    });
-
-    const diagResponse = await diagChat.sendMessage(contextParts);
-    const diagText = diagResponse.response.text();
-
-    let diagnosis: Diagnosis;
-    try {
-      const jsonMatch = diagText.match(/\{[\s\S]*\}/);
-      diagnosis = jsonMatch
-        ? JSON.parse(jsonMatch[0])
-        : {
-            missingConcept: "불명",
-            codeIssue: "분석 불가",
-            suggestedHintLevel: "L2",
-            studentState: "추가 정보 필요",
-          };
-    } catch {
-      diagnosis = {
-        missingConcept: "불명",
-        codeIssue: "분석 불가",
-        suggestedHintLevel: "L2",
-        studentState: "추가 정보 필요",
-      };
-    }
+    const diagnosis = await runDiagnosis(mainModel, contextParts);
 
     // ─── 3단계: 소크라테스 질문자 ───
-    const socraticContext = `${SOCRATIC_PROMPT}
+    console.log("[3/3] 소크라테스 질문 생성...");
 
-[진단 정보]
-- 부족한 개념: ${diagnosis.missingConcept}
-- 코드 이슈: ${diagnosis.codeIssue}
-- 힌트 레벨: ${diagnosis.suggestedHintLevel}
-- 학생 상태: ${diagnosis.studentState}`;
+    const responseText = await runSocratic(
+      mainModel,
+      contextParts,
+      diagnosis,
+      history || []
+    );
 
-    // 이전 대화 히스토리를 Gemini 형식으로 변환
-    const geminiHistory = (history || [])
-      .filter((m: ChatMessage) => m.role !== "system")
-      .map((m: ChatMessage) => ({
-        role: m.role === "assistant" ? "model" : "user",
-        parts: [{ text: m.content }],
-      }));
-
-    const socraticChat = mainModel.startChat({
-      history: [
-        { role: "user", parts: [{ text: socraticContext }] },
-        {
-          role: "model",
-          parts: [
-            {
-              text: "네, 소크라테스식 질문자로서 학생을 도울 준비가 됐어요. 절대 정답 코드를 제공하지 않겠습니다.",
-            },
-          ],
-        },
-        ...geminiHistory,
-      ],
-    });
-
-    const socraticResponse = await socraticChat.sendMessage(contextParts);
-    const responseText = socraticResponse.response.text();
+    console.log("✅ 응답 완료");
 
     return NextResponse.json({
       role: "assistant",
@@ -136,10 +89,92 @@ export async function POST(request: NextRequest) {
       blocked: false,
     });
   } catch (error) {
-    console.error("Chat API error:", error);
+    // 상세 에러 로깅
+    const errMsg = error instanceof Error ? error.message : String(error);
+    const errStack = error instanceof Error ? error.stack : "";
+    console.error("❌ Chat API error:", errMsg);
+    console.error("Stack:", errStack);
+
     return NextResponse.json(
-      { error: "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요." },
+      { error: `서버 오류: ${errMsg}` },
       { status: 500 }
     );
   }
+}
+
+// ─── 헬퍼 함수들 ───
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function runGuardrail(model: any, message: string): Promise<GuardrailResult> {
+  try {
+    const result = await model.generateContent(
+      `${GUARDRAIL_PROMPT}\n\n학생 메시지: ${message}`
+    );
+    const text = result.response.text();
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      return JSON.parse(jsonMatch[0]);
+    }
+    return { allowed: true };
+  } catch (err) {
+    console.warn("가드레일 에러 (허용으로 처리):", err);
+    return { allowed: true };
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function runDiagnosis(model: any, context: string): Promise<Diagnosis> {
+  const fallback: Diagnosis = {
+    missingConcept: "불명",
+    codeIssue: "분석 불가",
+    suggestedHintLevel: "L2",
+    studentState: "추가 정보 필요",
+  };
+
+  try {
+    const result = await model.generateContent(
+      `${DIAGNOSTICIAN_PROMPT}\n\n${context}`
+    );
+    const text = result.response.text();
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      return JSON.parse(jsonMatch[0]);
+    }
+    return fallback;
+  } catch (err) {
+    console.warn("진단 에러 (기본값 사용):", err);
+    return fallback;
+  }
+}
+
+async function runSocratic(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  model: any,
+  context: string,
+  diagnosis: Diagnosis,
+  history: ChatMessage[]
+): Promise<string> {
+  const systemContext = `${SOCRATIC_PROMPT}
+
+[진단 정보]
+- 부족한 개념: ${diagnosis.missingConcept}
+- 코드 이슈: ${diagnosis.codeIssue}
+- 힌트 레벨: ${diagnosis.suggestedHintLevel}
+- 학생 상태: ${diagnosis.studentState}`;
+
+  // 이전 대화를 하나의 맥락 문자열로 조합 (startChat 대신 단일 호출)
+  const historyText = history
+    .slice(-6) // 최근 6개만
+    .map((m) => `${m.role === "user" ? "학생" : "Lysis"}: ${m.content}`)
+    .join("\n\n");
+
+  const fullPrompt = [
+    systemContext,
+    historyText ? `\n[이전 대화]\n${historyText}` : "",
+    `\n[현재 입력]\n${context}`,
+    "\n위 정보를 바탕으로 소크라테스식 질문 하나를 한국어로 해주세요.",
+  ].join("");
+
+  const result = await model.generateContent(fullPrompt);
+  return result.response.text();
 }

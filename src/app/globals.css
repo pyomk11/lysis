@@ -3,17 +3,33 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --bg: #FBF9F6;
+    --bg-soft: #F4EFE8;
+    --ink: #2B2B2B;
+    --ink-soft: #6B6863;
+    --accent: #E8834B;
+    --accent-soft: #FBE4D4;
+    --line: #E8E2D8;
+  }
+
+  .dark {
+    --bg: #1A1917;
+    --bg-soft: #242220;
+    --ink: #F0EDE8;
+    --ink-soft: #9B9690;
+    --accent: #E8834B;
+    --accent-soft: #3A2318;
+    --line: #2E2C29;
+  }
+
   html {
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
   }
 
   body {
-    @apply bg-bg text-ink;
-  }
-
-  /* Monaco 에디터 커스텀 */
-  .monaco-editor .margin {
-    background: #F4EFE8 !important;
+    background-color: var(--bg);
+    color: var(--ink);
   }
 }

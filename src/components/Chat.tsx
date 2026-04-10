@@ -10,6 +10,42 @@ interface ChatProps {
   onSendMessage: (message: string) => void;
 }
 
+/** 로딩 중 단계별 메시지 (시간 기반 전환) */
+const LOADING_STEPS = [
+  { text: "코드를 읽고 있어요...", delay: 0 },
+  { text: "어디서 막혔는지 분석 중이에요...", delay: 2500 },
+  { text: "질문을 만들고 있어요...", delay: 5500 },
+  { text: "거의 다 됐어요...", delay: 9000 },
+];
+
+function LoadingIndicator() {
+  const [stepIndex, setStepIndex] = useState(0);
+
+  useEffect(() => {
+    const timers = LOADING_STEPS.slice(1).map((step, i) =>
+      setTimeout(() => setStepIndex(i + 1), step.delay)
+    );
+    return () => timers.forEach(clearTimeout);
+  }, []);
+
+  return (
+    <div className="flex flex-col items-start gap-2">
+      <div className="px-4 py-3 rounded-2xl rounded-bl-md bg-accent-soft">
+        <div className="flex items-center gap-2">
+          <div className="flex gap-1">
+            <span className="w-1.5 h-1.5 bg-accent rounded-full animate-bounce [animation-delay:0ms]" />
+            <span className="w-1.5 h-1.5 bg-accent rounded-full animate-bounce [animation-delay:150ms]" />
+            <span className="w-1.5 h-1.5 bg-accent rounded-full animate-bounce [animation-delay:300ms]" />
+          </div>
+          <span className="text-sm text-ink-soft">
+            {LOADING_STEPS[stepIndex].text}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Chat({ messages, isLoading, onSendMessage }: ChatProps) {
   const [input, setInput] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -36,21 +72,8 @@ export default function Chat({ messages, isLoading, onSendMessage }: ChatProps) 
         </span>
       </div>
 
-      {/* 메시지 영역 */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-full text-center px-8">
-            <div className="text-4xl mb-4">🪢</div>
-            <p className="text-ink font-semibold text-lg mb-2">
-              안녕하세요! Lysis예요.
-            </p>
-            <p className="text-ink-soft text-sm leading-relaxed max-w-sm">
-              코드를 작성하고 실행해본 뒤, 막히는 부분이 있으면 편하게
-              물어보세요. 답을 바로 드리진 않지만, 같이 생각해볼게요.
-            </p>
-          </div>
-        )}
-
+      {/* 메시지 영역 — 메시지 없을 땐 축소, 있을 땐 flex-1 */}
+      <div className={`overflow-y-auto p-4 space-y-4 ${messages.length === 0 && !isLoading ? "flex-none" : "flex-1"}`}>
         {messages.map((msg) => (
           <div
             key={msg.id}
@@ -70,7 +93,7 @@ export default function Chat({ messages, isLoading, onSendMessage }: ChatProps) 
 
             {/* 말풍선 */}
             <div
-              className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
+              className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap break-words overflow-hidden ${
                 msg.role === "user"
                   ? "bg-bg-soft text-ink rounded-br-md"
                   : "bg-accent-soft text-ink rounded-bl-md"
@@ -81,21 +104,22 @@ export default function Chat({ messages, isLoading, onSendMessage }: ChatProps) 
           </div>
         ))}
 
-        {/* 로딩 인디케이터 */}
-        {isLoading && (
-          <div className="flex items-start">
-            <div className="px-4 py-3 rounded-2xl rounded-bl-md bg-accent-soft">
-              <div className="flex gap-1">
-                <span className="w-2 h-2 bg-accent rounded-full animate-bounce [animation-delay:0ms]" />
-                <span className="w-2 h-2 bg-accent rounded-full animate-bounce [animation-delay:150ms]" />
-                <span className="w-2 h-2 bg-accent rounded-full animate-bounce [animation-delay:300ms]" />
-              </div>
-            </div>
-          </div>
-        )}
+        {/* 로딩 인디케이터 — 단계별 텍스트 표시 */}
+        {isLoading && <LoadingIndicator />}
 
         <div ref={bottomRef} />
       </div>
+
+      {/* 빈 상태일 때만 보이는 안내 — 입력창 바로 위 */}
+      {messages.length === 0 && !isLoading && (
+        <div className="flex-1 flex flex-col items-center justify-center text-center px-8 pb-4">
+          <div className="text-3xl mb-3">🪢</div>
+          <p className="text-ink font-semibold mb-1">안녕하세요! Lysis예요.</p>
+          <p className="text-ink-soft text-sm leading-relaxed max-w-xs">
+            코드를 작성하고 실행해본 뒤, 막히는 부분을 물어보세요.
+          </p>
+        </div>
+      )}
 
       {/* 입력 영역 */}
       <form
@@ -114,7 +138,7 @@ export default function Chat({ messages, isLoading, onSendMessage }: ChatProps) 
             }}
             placeholder="막히는 부분을 물어보세요..."
             rows={1}
-            className="flex-1 bg-transparent resize-none outline-none text-sm leading-relaxed text-ink placeholder:text-ink-soft/50 max-h-32"
+            className="flex-1 bg-transparent resize-none outline-none text-base leading-relaxed text-ink placeholder:text-ink-soft/50 max-h-32"
           />
           <button
             type="submit"
@@ -124,7 +148,7 @@ export default function Chat({ messages, isLoading, onSendMessage }: ChatProps) 
             <Send size={16} />
           </button>
         </div>
-        <p className="text-[11px] text-ink-soft/50 text-center mt-2">
+        <p className="text-[11px] text-ink-soft/50 text-center mt-1.5">
           Lysis는 답을 알려주지 않아요. 함께 생각하는 도구예요.
         </p>
       </form>

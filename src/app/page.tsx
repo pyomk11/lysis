@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import type { ChatMessage, ExecutionResult } from "@/types";
 import Editor from "@/components/Editor";
 import Chat from "@/components/Chat";
-import { Play, RotateCcw } from "lucide-react";
+import { Play, RotateCcw, Moon, Sun } from "lucide-react";
 
 const DEFAULT_CODE = `# 여기에 Python 코드를 작성하세요
 # 예: 리스트에서 중복을 제거하는 함수를 만들어보세요
@@ -22,8 +22,20 @@ export default function Home() {
   const [isRunning, setIsRunning] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDark, setIsDark] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const pyodideRef = useRef<any>(null);
+
+  // 다크모드 초기값: 시스템 설정 따름
+  useEffect(() => {
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    setIsDark(prefersDark);
+  }, []);
+
+  // 다크모드 토글 시 <html>에 class 적용
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDark);
+  }, [isDark]);
 
   // Pyodide 사전 로드
   useEffect(() => {
@@ -77,7 +89,7 @@ export default function Home() {
             message: userMessage,
             code,
             executionResult: output || undefined,
-            history: messages.slice(-10), // 최근 10개만 전송 (토큰 절약)
+            history: messages.slice(-10),
           }),
         });
 
@@ -118,21 +130,16 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen bg-bg text-ink">
       {/* 헤더 */}
       <header className="flex items-center justify-between px-5 h-14 border-b border-line bg-bg shrink-0">
         <div className="flex items-center gap-2.5">
           {/* λ 로고 */}
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 120 120"
-            aria-hidden="true"
-          >
+          <svg width="24" height="24" viewBox="0 0 120 120" aria-hidden="true">
             <path
               d="M 60 42 L 30 98"
               fill="none"
-              stroke="#2B2B2B"
+              stroke="var(--ink)"
               strokeWidth="8"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -140,7 +147,7 @@ export default function Home() {
             <path
               d="M 60 42 L 90 98"
               fill="none"
-              stroke="#2B2B2B"
+              stroke="var(--ink)"
               strokeWidth="8"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -159,6 +166,16 @@ export default function Home() {
             답 대신, 질문을.
           </span>
         </div>
+
+        {/* 다크모드 토글 */}
+        <button
+          onClick={() => setIsDark((d) => !d)}
+          className="p-2 rounded-full text-ink-soft hover:text-ink hover:bg-bg-soft transition-colors"
+          title={isDark ? "라이트 모드로 전환" : "다크 모드로 전환"}
+          aria-label={isDark ? "라이트 모드" : "다크 모드"}
+        >
+          {isDark ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
       </header>
 
       {/* 메인 콘텐츠 — 에디터(좌) + 채팅(우) */}
@@ -189,7 +206,7 @@ export default function Home() {
 
           {/* Monaco 에디터 */}
           <div className="flex-1 min-h-0">
-            <Editor value={code} onChange={setCode} />
+            <Editor value={code} onChange={setCode} isDark={isDark} />
           </div>
 
           {/* 출력 패널 */}
@@ -197,14 +214,14 @@ export default function Home() {
             <div className="px-4 py-2 text-xs font-medium text-ink-soft bg-bg-soft border-b border-line">
               출력
             </div>
-            <pre className="p-4 text-sm font-mono text-ink overflow-auto h-[calc(100%-32px)] whitespace-pre-wrap">
+            <pre className="p-4 text-sm font-mono text-ink overflow-auto h-[calc(100%-32px)] whitespace-pre-wrap bg-bg">
               {output || "코드를 실행하면 여기에 결과가 표시됩니다."}
             </pre>
           </div>
         </div>
 
         {/* 오른쪽 패널: 채팅 */}
-        <div className="w-1/2">
+        <div className="w-1/2 bg-bg">
           <Chat
             messages={messages}
             isLoading={isLoading}
