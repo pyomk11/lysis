@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    @apply bg-bg text-ink;
+  }
+
+  /* Monaco 에디터 커스텀 */
+  .monaco-editor .margin {
+    background: #F4EFE8 !important;
+  }
+}
