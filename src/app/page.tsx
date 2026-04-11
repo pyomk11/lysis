@@ -149,7 +149,7 @@ export default function LandingPage() {
               {Icon:MessageCircle, h:"소크라테스식 대화 엔진", p:"정답을 알려주는 대신, \"어디서부터 막혔어요?\"라고 되물으며 사고 과정을 이끌어냅니다."},
               {Icon:SlidersHorizontal, h:"3단계 힌트 시스템", p:"L1 개념 환기 → L2 방향 제시 → L3 의사코드. 너무 많지도, 너무 적지도 않게 필요한 만큼만."},
               {Icon:ShieldCheck, h:"답 복붙 가드레일", p:"\"답만 알려주세요\" 같은 요청은 정중히 거절합니다. 학습 윤리를 기본값으로 내장했어요."},
-              {Icon:TrendingUp, h:"나만의 학습 기록", p:"오늘의 \"아!\" 순간이 쌓여 내 성장 지도가 됩니다. 어떤 개념에서 막혔는지 한눈에."},
+              {Icon:TrendingUp, h:"나만의 학습 기록", p:"세션마다 어떤 개념에서 막혔는지, 힌트를 얼마나 썼는지 기록됩니다. 내 학습 기록에서 한눈에."},
               {Icon:BarChart3, h:"교수자 대시보드", p:"우리 반 학생들이 이번 주 어디서 많이 막혔는지 시각화해 다음 수업에 바로 반영할 수 있어요."},
             ].map(({Icon,h,p}) => (
               <div className="feature-card" key={h}>
@@ -194,16 +194,16 @@ export default function LandingPage() {
               <span className="kicker">For instructors</span>
               <h2>반 전체의<br/>&lsquo;막힌 지점&rsquo;이 보입니다.</h2>
               <p>학생마다 어떤 개념에서 얼마나 망설였는지, 어떤 오류가 가장 자주 나왔는지 — Lysis가 수업 중에 조용히 기록합니다.</p>
-              <p>다음 수업에 무엇을 짚어야 할지, 데이터가 알려줍니다. LMS나 과제 시스템 없이도 수업에 바로 도입할 수 있어요.</p>
+              <p>다음 수업에 무엇을 짚어야 할지, 데이터가 알려줍니다. 회원가입 한 번이면 수업에 바로 도입할 수 있어요.</p>
             </div>
             <div className="col-visual" aria-hidden="true">
               <div style={{fontSize:13,color:"var(--ink-soft)",marginBottom:16,fontWeight:600}}>이번 주 학습 리포트 · 예시</div>
               {[
                 ["가장 많이 막힌 개념","List comprehension"],
                 ["평균 힌트 사용 레벨","L2 (방향 제시)"],
-                ["스스로 해결한 비율","73%"],
+                ["개념 해결 비율","73%"],
                 ["가드레일로 걸러진 요청","12건"],
-                ["\"아!\" 순간 기록 수","58회"],
+                ["이번 주 총 질문 수","58건"],
               ].map(([label,val]) => (
                 <div className="stat-row" key={label}>
                   <span className="label">{label}</span>
@@ -220,7 +220,7 @@ export default function LandingPage() {
         <div className="container">
           <div className="card">
             <h2>우리 수업에 도입해볼까요?</h2>
-            <p>설치도 셋업도 필요 없어요. URL 하나면 지금 바로 수업에서 쓸 수 있습니다.</p>
+            <p>설치도 셋업도 필요 없어요. 회원가입 한 번이면 지금 바로 수업에서 쓸 수 있습니다.</p>
             <Link href="/login" className="btn btn-orange">지금 바로 체험하기 →</Link>
           </div>
         </div>

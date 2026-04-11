@@ -322,6 +322,12 @@ export default function Home() {
         <div className="flex items-center gap-2">
           {profile ? (
             <>
+              <Link
+                href="/progress"
+                className="text-xs text-ink-soft hover:text-ink px-2 py-1 border border-line rounded-full transition-colors hidden sm:inline-flex items-center gap-1"
+              >
+                내 학습 기록
+              </Link>
               <span className="text-xs font-semibold text-ink">{profile.name}</span>
               <button
                 onClick={async () => { await signOut(); router.replace("/login"); }}

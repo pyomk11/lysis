@@ -319,3 +319,108 @@ export async function getProfile(userId: string): Promise<Profile | null> {
 export function onAuthStateChange(callback: (event: string, session: unknown) => void) {
   return supabase.auth.onAuthStateChange(callback);
 }
+
+// ─── 학생 학습 기록 ──────────────────────────────────────
+
+export interface SessionSummary {
+  id: string;
+  started_at: string;
+  ended_at?: string;
+  class_name?: string;
+  message_count: number;
+  concepts: { concept: string; resolved: boolean }[];
+  hint_levels: Record<string, number>;
+}
+
+/** 학생 본인의 세션 목록 + 각 세션별 통계 */
+export async function getStudentSessions(userId: string): Promise<SessionSummary[]> {
+  // 세션 목록 (최신순)
+  const { data: sessions, error } = await supabase
+    .from("sessions")
+    .select("id, started_at, ended_at, class_id")
+    .eq("user_id", userId)
+    .order("started_at", { ascending: false })
+    .limit(50);
+
+  if (error || !sessions) return [];
+
+  // 강의명 맵
+  const classIds = [...new Set(sessions.map((s) => s.class_id).filter(Boolean))];
+  const classMap: Record<string, string> = {};
+  if (classIds.length > 0) {
+    const { data: classes } = await supabase
+      .from("classes")
+      .select("id, name")
+      .in("id", classIds);
+    (classes ?? []).forEach((c) => { classMap[c.id] = c.name; });
+  }
+
+  // 세션별 메시지/인사이트 병렬 조회
+  const summaries = await Promise.all(
+    sessions.map(async (s) => {
+      const [msgRes, insightRes] = await Promise.all([
+        supabase
+          .from("messages")
+          .select("hint_level, role")
+          .eq("session_id", s.id),
+        supabase
+          .from("insights")
+          .select("concept, resolved")
+          .eq("session_id", s.id),
+      ]);
+
+      const msgs = msgRes.data ?? [];
+      const insights = insightRes.data ?? [];
+
+      // 힌트 레벨 집계
+      const hintLevels: Record<string, number> = { L1: 0, L2: 0, L3: 0 };
+      msgs.forEach(({ hint_level }) => {
+        if (hint_level && hintLevels[hint_level] !== undefined) {
+          hintLevels[hint_level]++;
+        }
+      });
+
+      return {
+        id: s.id,
+        started_at: s.started_at,
+        ended_at: s.ended_at,
+        class_name: s.class_id ? classMap[s.class_id] : undefined,
+        message_count: msgs.filter((m) => m.role === "user").length,
+        concepts: insights as { concept: string; resolved: boolean }[],
+        hint_levels: hintLevels,
+      };
+    })
+  );
+
+  return summaries;
+}
+
+/** 학생 전체 개념 빈도 집계 */
+export async function getStudentTopConcepts(userId: string) {
+  const { data: sessions } = await supabase
+    .from("sessions")
+    .select("id")
+    .eq("user_id", userId);
+
+  if (!sessions || sessions.length === 0) return [];
+
+  const sessionIds = sessions.map((s) => s.id);
+  const { data: insights } = await supabase
+    .from("insights")
+    .select("concept, resolved")
+    .in("session_id", sessionIds);
+
+  if (!insights) return [];
+
+  const freq: Record<string, { count: number; resolved: number }> = {};
+  insights.forEach(({ concept, resolved }) => {
+    if (!freq[concept]) freq[concept] = { count: 0, resolved: 0 };
+    freq[concept].count++;
+    if (resolved) freq[concept].resolved++;
+  });
+
+  return Object.entries(freq)
+    .sort((a, b) => b[1].count - a[1].count)
+    .slice(0, 8)
+    .map(([concept, { count, resolved }]) => ({ concept, count, resolved }));
+}
