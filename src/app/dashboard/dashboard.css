@@ -1,0 +1,178 @@
+/* ─── 대시보드 전용 스타일 (.dash 스코프) ─── */
+
+.dash {
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  background: #FBF9F6; color: #2B2B2B; min-height: 100vh;
+}
+
+/* 헤더 */
+.dash-header {
+  position: sticky; top: 0; z-index: 10;
+  background: rgba(251,249,246,.85);
+  backdrop-filter: saturate(180%) blur(14px);
+  border-bottom: 1px solid #E8E2D8;
+}
+.dash-header-inner {
+  max-width: 1080px; margin: 0 auto; padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between; height: 68px;
+}
+.dash-brand {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none; color: #2B2B2B; transition: opacity .2s;
+}
+.dash-brand:hover { opacity: 0.75; }
+.dash-brand-text { font-weight: 700; font-size: 22px; letter-spacing: -.01em; }
+.dash-brand-sub {
+  font-size: 13px; font-weight: 600; color: #E8834B;
+  background: #FBE4D4; padding: 3px 10px; border-radius: 999px;
+}
+
+/* 날짜 범위 선택 */
+.dash-daterange {
+  display: flex; align-items: center; gap: 6px;
+}
+.dash-date-input {
+  padding: 5px 10px; border: 1px solid #E8E2D8; border-radius: 10px;
+  background: white; color: #2B2B2B; font-size: 13px; font-weight: 500;
+  outline: none; cursor: pointer; transition: border-color .2s;
+}
+.dash-date-input:focus { border-color: #E8834B; }
+.dash-date-sep { font-size: 13px; color: #A09B94; font-weight: 600; }
+
+/* 메인 */
+.dash-main { max-width: 1080px; margin: 0 auto; padding: 32px 24px 64px; }
+
+.dash-loading, .dash-error {
+  text-align: center; padding: 48px; color: #6B6863; font-size: 15px;
+}
+.dash-error { color: #c0392b; }
+
+/* 통계 카드 */
+.stat-cards {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px;
+}
+.stat-card {
+  background: white; border: 1px solid #E8E2D8; border-radius: 16px;
+  padding: 24px; display: flex; flex-direction: column; gap: 4px;
+}
+.stat-label { font-size: 13px; color: #6B6863; font-weight: 500; }
+.stat-value { font-size: 32px; font-weight: 700; color: #2B2B2B; letter-spacing: -.02em; }
+.stat-sub { font-size: 12px; color: #A09B94; }
+
+@media (max-width: 768px) {
+  .stat-cards { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .stat-cards { grid-template-columns: 1fr; }
+}
+
+/* 2열 그리드 */
+.dash-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+}
+@media (max-width: 768px) {
+  .dash-grid { grid-template-columns: 1fr; }
+}
+
+/* 패널 공통 */
+.dash-panel {
+  background: white; border: 1px solid #E8E2D8; border-radius: 16px;
+  padding: 28px;
+}
+.panel-title {
+  font-size: 16px; font-weight: 700; margin-bottom: 20px;
+  color: #2B2B2B;
+}
+.panel-empty { color: #A09B94; font-size: 14px; text-align: center; padding: 24px 0; }
+
+/* 강의 선택 */
+.class-selector { margin-bottom: 24px; }
+.class-selector-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.class-select {
+  padding: 8px 14px; border: 1px solid #E8E2D8; border-radius: 12px;
+  background: white; color: #2B2B2B; font-size: 14px; font-weight: 500;
+  outline: none; cursor: pointer; min-width: 200px;
+}
+.class-select:focus { border-color: #E8834B; }
+.class-create-btn {
+  padding: 8px 16px; border: 1px dashed #E8E2D8; border-radius: 12px;
+  background: transparent; color: #6B6863; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all .2s;
+}
+.class-create-btn:hover { border-color: #E8834B; color: #E8834B; }
+
+.class-invite-info {
+  margin-top: 12px; font-size: 14px; color: #6B6863;
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.invite-code-display {
+  font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 18px;
+  color: #E8834B; background: #FBE4D4; padding: 4px 12px; border-radius: 8px;
+  letter-spacing: 0.15em;
+}
+.invite-hint { font-size: 12px; color: #A09B94; }
+
+.class-create-form {
+  margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;
+}
+.class-input {
+  padding: 8px 14px; border: 1px solid #E8E2D8; border-radius: 12px;
+  background: white; color: #2B2B2B; font-size: 14px; outline: none;
+  min-width: 180px;
+}
+.class-input:focus { border-color: #E8834B; }
+.class-submit-btn {
+  padding: 8px 18px; border: none; border-radius: 12px;
+  background: #2B2B2B; color: #FBF9F6; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: background .2s;
+}
+.class-submit-btn:hover { background: #E8834B; }
+.class-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* 막힌 개념 리스트 */
+.concept-list { display: flex; flex-direction: column; gap: 14px; }
+.concept-row { display: flex; align-items: flex-start; gap: 12px; }
+.concept-rank {
+  font-size: 12px; font-weight: 700; color: #E8834B;
+  min-width: 28px; padding-top: 2px;
+}
+.concept-info { flex: 1; }
+.concept-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.concept-name { font-size: 14px; font-weight: 600; color: #2B2B2B; }
+.concept-count { font-size: 13px; color: #6B6863; }
+.concept-bar-bg {
+  height: 6px; background: #F4EFE8; border-radius: 3px; overflow: hidden;
+}
+.concept-bar {
+  height: 100%; background: #E8834B; border-radius: 3px;
+  transition: width .5s ease;
+}
+
+/* 힌트 레벨 분포 */
+.hint-section { display: flex; flex-direction: column; gap: 20px; }
+.hint-bar-container {
+  display: flex; height: 24px; border-radius: 12px; overflow: hidden;
+  gap: 2px;
+}
+.hint-bar { border-radius: 12px; transition: flex .5s ease; }
+.hint-l1 { background: #FBE4D4; }
+.hint-l2 { background: #E8834B; }
+.hint-l3 { background: #2B2B2B; }
+
+.hint-legend { display: flex; flex-direction: column; gap: 10px; }
+.hint-legend-item {
+  display: flex; align-items: center; gap: 8px; font-size: 14px; color: #2B2B2B;
+}
+.hint-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+.hint-l1-dot { background: #FBE4D4; border: 1px solid #E8E2D8; }
+.hint-l2-dot { background: #E8834B; }
+.hint-l3-dot { background: #2B2B2B; }
+.hint-pct { margin-left: auto; font-size: 13px; color: #6B6863; font-weight: 600; }
+
+.hint-insight {
+  background: #F4EFE8; border-radius: 12px; padding: 16px;
+  font-size: 14px; color: #6B6863; line-height: 1.6;
+}
+.hint-insight p { margin: 0; }

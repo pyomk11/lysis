@@ -1,14 +1,38 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import "./landing.css";
 import {
   GraduationCap, ClipboardCopy, Repeat, Hand, EyeOff,
   Zap, MessageCircle, SlidersHorizontal, ShieldCheck, TrendingUp,
   BarChart3,
 } from "lucide-react";
+import { getCurrentUser, getProfile, signOut } from "@/lib/supabase";
+import type { Profile } from "@/lib/supabase";
 
 export default function LandingPage() {
+  const router = useRouter();
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [authLoaded, setAuthLoaded] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const user = await getCurrentUser();
+      if (user) {
+        const p = await getProfile(user.id);
+        setProfile(p);
+      }
+      setAuthLoaded(true);
+    })();
+  }, []);
+
+  const handleLogout = async () => {
+    await signOut();
+    setProfile(null);
+  };
+
   return (
     <div className="landing">
       {/* NAV */}
@@ -27,8 +51,33 @@ export default function LandingPage() {
             <a href="#features">기능</a>
             <a href="#how">작동 방식</a>
             <a href="#instructor">교수자</a>
+            {authLoaded && profile?.role === "teacher" && (
+              <Link href="/dashboard">대시보드</Link>
+            )}
+            {authLoaded && !profile && (
+              <Link href="/login">로그인</Link>
+            )}
           </div>
-          <Link href="/app" className="nav-cta">체험해보기</Link>
+          {authLoaded && profile ? (
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <span style={{ fontSize: "13px", color: "#888" }}>{profile.name}</span>
+              <button
+                onClick={handleLogout}
+                className="nav-cta"
+                style={{ background: "#888" }}
+              >
+                로그아웃
+              </button>
+              <Link
+                href={profile.role === "teacher" ? "/dashboard" : "/app"}
+                className="nav-cta"
+              >
+                {profile.role === "teacher" ? "대시보드" : "학습하기"}
+              </Link>
+            </div>
+          ) : (
+            <Link href="/app" className="nav-cta">체험해보기</Link>
+          )}
         </div>
       </nav>
 
