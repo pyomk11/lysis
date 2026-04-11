@@ -46,12 +46,12 @@ export default function DashboardPage() {
     (async () => {
       const user = await getCurrentUser();
       if (!user) {
-        router.push("/login");
+        router.replace("/login");
         return;
       }
       const p = await getProfile(user.id);
       if (!p || p.role !== "teacher") {
-        router.push("/app");
+        router.replace("/app");
         return;
       }
       setProfile(p);

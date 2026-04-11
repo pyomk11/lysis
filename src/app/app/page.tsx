@@ -43,17 +43,17 @@ export default function Home() {
     (async () => {
       const user = await getCurrentUser();
       if (!user) {
-        router.push("/login");
+        router.replace("/login");
         return;
       }
       const p = await getProfile(user.id);
       if (!p) {
-        router.push("/login");
+        router.replace("/login");
         return;
       }
       // 교수자가 /app에 오면 대시보드로
       if (p.role === "teacher") {
-        router.push("/dashboard");
+        router.replace("/dashboard");
         return;
       }
       setProfile(p);

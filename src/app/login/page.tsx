@@ -40,9 +40,9 @@ export default function LoginPage() {
             setError(loginResult.error);
           } else {
             if (role === "teacher") {
-              router.push("/dashboard");
+              router.replace("/dashboard");
             } else {
-              router.push("/app");
+              router.replace("/app");
             }
           }
         }
