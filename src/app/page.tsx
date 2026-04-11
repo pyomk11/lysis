@@ -76,7 +76,7 @@ export default function LandingPage() {
               </Link>
             </div>
           ) : (
-            <Link href="/app" className="nav-cta">체험해보기</Link>
+            <Link href="/login" className="nav-cta">체험해보기</Link>
           )}
         </div>
       </nav>
@@ -91,7 +91,7 @@ export default function LandingPage() {
             Lysis는 프로그래밍 수업에서 교수자와 학생 모두를 위한 <strong>소크라테스식 AI 교육 도구</strong>입니다.
           </p>
           <div className="hero-ctas">
-            <Link href="/app" className="btn btn-primary">지금 막힌 코드, 가져와 보세요 →</Link>
+            <Link href="/login" className="btn btn-primary">지금 막힌 코드, 가져와 보세요 →</Link>
             <a href="#how" className="btn btn-ghost">어떻게 작동하나요?</a>
           </div>
           <div className="chat-preview" aria-label="대화 예시">
@@ -221,7 +221,7 @@ export default function LandingPage() {
           <div className="card">
             <h2>우리 수업에 도입해볼까요?</h2>
             <p>설치도 셋업도 필요 없어요. URL 하나면 지금 바로 수업에서 쓸 수 있습니다.</p>
-            <Link href="/app" className="btn btn-orange">지금 바로 체험하기 →</Link>
+            <Link href="/login" className="btn btn-orange">지금 바로 체험하기 →</Link>
           </div>
         </div>
       </section>

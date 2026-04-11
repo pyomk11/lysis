@@ -195,6 +195,21 @@ export default function LoginPage() {
           </>
         )}
       </p>
+
+      {/* 구분선 */}
+      <div className="flex items-center gap-3 w-full max-w-xs mt-5">
+        <div className="flex-1 h-px bg-line" />
+        <span className="text-xs text-ink-soft">또는</span>
+        <div className="flex-1 h-px bg-line" />
+      </div>
+
+      {/* 게스트 체험 */}
+      <Link
+        href="/app?guest=true"
+        className="mt-3 text-xs text-ink-soft hover:text-ink transition-colors"
+      >
+        로그인 없이 체험하기 →
+      </Link>
     </div>
   );
 }

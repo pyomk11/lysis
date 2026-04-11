@@ -39,7 +39,7 @@ export default function Home() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const pyodideRef = useRef<any>(null);
 
-  // 인증 확인 (비로그인도 허용 — 단, DB 저장 안 함)
+  // 인증 확인
   useEffect(() => {
     (async () => {
       const user = await getCurrentUser();
@@ -50,9 +50,17 @@ export default function Home() {
           return;
         }
         if (p) setProfile(p);
+        setAuthChecked(true);
+        return;
       }
-      // 비로그인도 통과
-      setAuthChecked(true);
+      // 비로그인 — guest 파라미터 있으면 허용 (초대코드 화면 스킵, DB 저장 없음)
+      const isGuest = new URLSearchParams(window.location.search).get("guest") === "true";
+      if (isGuest) {
+        setJoinStep("ready"); // 초대코드 화면 스킵
+        setAuthChecked(true);
+      } else {
+        router.replace("/login");
+      }
     })();
   }, [router]);
 
