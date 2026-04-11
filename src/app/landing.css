@@ -27,10 +27,17 @@
   text-decoration: none; transition: background .2s, transform .2s;
 }
 .landing .nav-cta:hover { background: #E8834B; transform: translateY(-1px); }
-@media (max-width: 720px) { .landing .nav-links { display: none; } }
+@media (max-width: 720px) {
+  .landing .nav-links { display: none; }
+  .landing .nav-inner { height: 56px; }
+  .landing .brand-text { font-size: 18px; }
+}
 
 /* HERO */
 .landing .hero { padding: 96px 0 80px; text-align: center; }
+@media (max-width: 720px) {
+  .landing .hero { padding: 56px 0 48px; }
+}
 .landing .badge {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 6px 14px; background: #FBE4D4;
@@ -64,6 +71,10 @@
   box-shadow: 0 1px 2px rgba(43,43,43,.04), 0 8px 24px rgba(43,43,43,.06);
   text-align: left;
 }
+@media (max-width: 600px) {
+  .landing .chat-preview { padding: 18px; border-radius: 16px; margin-top: 36px; }
+  .landing .bubble { font-size: 14px; padding: 10px 14px; }
+}
 .landing .bubble { padding: 14px 18px; border-radius: 18px; margin-bottom: 4px; max-width: 82%; font-size: 15px; line-height: 1.6; }
 .landing .bubble.user { background: #F4EFE8; margin-left: auto; border-bottom-right-radius: 6px; }
 .landing .bubble.lysis { background: #FBE4D4; color: #5C2A0A; border-bottom-left-radius: 6px; }
@@ -72,6 +83,12 @@
 
 /* SECTION */
 .landing section { padding: 88px 0; }
+@media (max-width: 720px) {
+  .landing section { padding: 56px 0; }
+  .landing .section-head { margin-bottom: 36px; }
+  .landing .section-head p { font-size: 15px; }
+  .landing .container { padding: 0 16px; }
+}
 .landing section.alt { background: #F4EFE8; }
 .landing .section-head { max-width: 680px; margin: 0 auto 56px; text-align: center; }
 .landing .kicker { display: inline-block; font-size: 13px; font-weight: 600; color: #E8834B; letter-spacing: .02em; text-transform: uppercase; margin-bottom: 12px; }
@@ -118,6 +135,11 @@
 /* CTA */
 .landing .final-cta { text-align: center; padding: 96px 0; }
 .landing .final-cta .card { background: #2B2B2B; color: #FBF9F6; border-radius: 24px; padding: 64px 32px; }
+@media (max-width: 720px) {
+  .landing .final-cta { padding: 48px 0; }
+  .landing .final-cta .card { padding: 40px 20px; border-radius: 18px; }
+  .landing .final-cta p { font-size: 15px; }
+}
 .landing .final-cta h2 { font-size: clamp(26px, 3.6vw, 38px); margin-bottom: 12px; letter-spacing: -.02em; }
 .landing .final-cta p { color: #D9D4CC; font-size: 17px; margin-bottom: 28px; }
 .landing .btn-orange { background: #E8834B; color: white; }
@@ -126,5 +148,9 @@
 /* FOOTER */
 .landing footer { padding: 40px 0 56px; border-top: 1px solid #E8E2D8; color: #6B6863; font-size: 13px; }
 .landing .footer-inner { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+@media (max-width: 600px) {
+  .landing .footer-inner { flex-direction: column; }
+  .landing .etymology { max-width: 100%; }
+}
 .landing .etymology { max-width: 480px; line-height: 1.7; }
 .landing .etymology strong { color: #2B2B2B; }

@@ -28,6 +28,7 @@ export default function Home() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isDark, setIsDark] = useState(false);
+  const [mobileTab, setMobileTab] = useState<"editor" | "chat">("editor");
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [classInfo, setClassInfo] = useState<Class | null>(null);
   const [joinStep, setJoinStep] = useState<"joining" | "ready">("joining");
@@ -338,10 +339,37 @@ export default function Home() {
         </div>
       </header>
 
+      {/* 모바일 탭 바 */}
+      <div className="flex md:hidden border-b border-line bg-bg-soft shrink-0">
+        <button
+          onClick={() => setMobileTab("editor")}
+          className={`flex-1 py-2.5 text-xs font-semibold transition-colors ${
+            mobileTab === "editor" ? "text-ink border-b-2 border-ink" : "text-ink-soft"
+          }`}
+        >
+          에디터
+        </button>
+        <button
+          onClick={() => setMobileTab("chat")}
+          className={`flex-1 py-2.5 text-xs font-semibold transition-colors ${
+            mobileTab === "chat" ? "text-ink border-b-2 border-ink" : "text-ink-soft"
+          }`}
+        >
+          Lysis
+          {messages.length > 0 && mobileTab !== "chat" && (
+            <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 bg-accent text-bg rounded-full text-[10px]">
+              {messages.length}
+            </span>
+          )}
+        </button>
+      </div>
+
       {/* 메인 콘텐츠 — 에디터(좌) + 채팅(우) */}
       <main className="flex flex-1 overflow-hidden">
         {/* 왼쪽 패널: 에디터 + 출력 */}
-        <div className="flex flex-col w-1/2 border-r border-line overflow-hidden">
+        <div className={`flex flex-col border-r border-line overflow-hidden
+          w-full md:w-1/2
+          ${mobileTab === "editor" ? "flex" : "hidden"} md:flex`}>
           {/* 에디터 툴바 */}
           <div className="flex items-center gap-2 px-4 h-10 border-b border-line bg-bg-soft shrink-0">
             <span className="text-xs text-ink-soft font-medium">main.py</span>
@@ -370,7 +398,7 @@ export default function Home() {
           </div>
 
           {/* 출력 패널 */}
-          <div className="h-[180px] border-t border-line shrink-0">
+          <div className="h-[160px] md:h-[180px] border-t border-line shrink-0">
             <div className="px-4 py-2 text-xs font-medium text-ink-soft bg-bg-soft border-b border-line">
               출력
             </div>
@@ -381,7 +409,8 @@ export default function Home() {
         </div>
 
         {/* 오른쪽 패널: 채팅 */}
-        <div className="w-1/2 bg-bg">
+        <div className={`bg-bg w-full md:w-1/2
+          ${mobileTab === "chat" ? "flex flex-col" : "hidden"} md:block`}>
           <Chat
             messages={messages}
             isLoading={isLoading}

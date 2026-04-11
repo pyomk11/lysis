@@ -14,7 +14,12 @@
 }
 .dash-header-inner {
   max-width: 1080px; margin: 0 auto; padding: 0 24px;
-  display: flex; align-items: center; justify-content: space-between; height: 68px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 68px; gap: 12px; flex-wrap: wrap;
+}
+@media (max-width: 700px) {
+  .dash-header-inner { height: auto; padding: 12px 16px; flex-direction: column; align-items: flex-start; gap: 10px; }
+  .dash-brand-sub { font-size: 11px; }
 }
 .dash-brand {
   display: flex; align-items: center; gap: 10px;
@@ -29,18 +34,25 @@
 
 /* 날짜 범위 선택 */
 .dash-daterange {
-  display: flex; align-items: center; gap: 6px;
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
 }
 .dash-date-input {
-  padding: 5px 10px; border: 1px solid #E8E2D8; border-radius: 10px;
+  padding: 5px 8px; border: 1px solid #E8E2D8; border-radius: 10px;
   background: white; color: #2B2B2B; font-size: 13px; font-weight: 500;
   outline: none; cursor: pointer; transition: border-color .2s;
+  min-width: 0;
 }
 .dash-date-input:focus { border-color: #E8834B; }
 .dash-date-sep { font-size: 13px; color: #A09B94; font-weight: 600; }
+@media (max-width: 700px) {
+  .dash-date-input { font-size: 12px; padding: 4px 6px; }
+}
 
 /* 메인 */
 .dash-main { max-width: 1080px; margin: 0 auto; padding: 32px 24px 64px; }
+@media (max-width: 700px) {
+  .dash-main { padding: 20px 16px 48px; }
+}
 
 .dash-loading, .dash-error {
   text-align: center; padding: 48px; color: #6B6863; font-size: 15px;
@@ -88,6 +100,12 @@
 /* 강의 선택 */
 .class-selector { margin-bottom: 24px; }
 .class-selector-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+@media (max-width: 700px) {
+  .class-select { min-width: 0; width: 100%; }
+  .class-create-btn { width: 100%; text-align: center; }
+  .class-create-form { flex-direction: column; }
+  .class-input { min-width: 0; width: 100%; }
+}
 .class-select {
   padding: 8px 14px; border: 1px solid #E8E2D8; border-radius: 12px;
   background: white; color: #2B2B2B; font-size: 14px; font-weight: 500;
