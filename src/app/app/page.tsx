@@ -38,25 +38,19 @@ export default function Home() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const pyodideRef = useRef<any>(null);
 
-  // 인증 확인
+  // 인증 확인 (비로그인도 허용 — 단, DB 저장 안 함)
   useEffect(() => {
     (async () => {
       const user = await getCurrentUser();
-      if (!user) {
-        router.replace("/login");
-        return;
+      if (user) {
+        const p = await getProfile(user.id);
+        if (p?.role === "teacher") {
+          router.replace("/dashboard");
+          return;
+        }
+        if (p) setProfile(p);
       }
-      const p = await getProfile(user.id);
-      if (!p) {
-        router.replace("/login");
-        return;
-      }
-      // 교수자가 /app에 오면 대시보드로
-      if (p.role === "teacher") {
-        router.replace("/dashboard");
-        return;
-      }
-      setProfile(p);
+      // 비로그인도 통과
       setAuthChecked(true);
     })();
   }, [router]);
@@ -81,15 +75,21 @@ export default function Home() {
       return;
     }
     setClassInfo(found);
-    const sid = await createSession(profile?.name ?? "anonymous", found.id, profile?.id);
-    if (sid) setSessionId(sid);
+    // 로그인 상태일 때만 DB에 세션 저장
+    if (profile) {
+      const sid = await createSession(profile.name, found.id, profile.id);
+      if (sid) setSessionId(sid);
+    }
     setJoinStep("ready");
   };
 
   // 연습 모드 (강의 없이 시작)
   const handleSkip = async () => {
-    const sid = await createSession(profile?.name ?? "anonymous", undefined, profile?.id);
-    if (sid) setSessionId(sid);
+    // 로그인 상태일 때만 DB에 세션 저장
+    if (profile) {
+      const sid = await createSession(profile.name, undefined, profile.id);
+      if (sid) setSessionId(sid);
+    }
     setJoinStep("ready");
   };
 
@@ -212,7 +212,13 @@ export default function Home() {
           </svg>
           <span className="text-2xl font-bold">Lysis</span>
         </div>
-        <p className="text-ink-soft mb-6">수업 초대코드를 입력하세요</p>
+        {profile ? (
+          <p className="text-ink-soft mb-6">
+            안녕하세요, <span className="font-semibold text-ink">{profile.name}</span>님 · 수업 초대코드를 입력하세요
+          </p>
+        ) : (
+          <p className="text-ink-soft mb-6">수업 초대코드를 입력하세요</p>
+        )}
 
         <div className="flex flex-col items-center gap-3 w-full max-w-xs">
           <input
@@ -237,8 +243,23 @@ export default function Home() {
             onClick={handleSkip}
             className="text-xs text-ink-soft hover:text-ink transition-colors"
           >
-            초대코드 없이 연습하기
+            {profile ? "초대코드 없이 연습하기" : "로그인 없이 체험하기"}
           </button>
+
+          {/* 비로그인 안내 */}
+          {!profile && (
+            <div className="mt-2 text-center">
+              <p className="text-xs text-ink-soft mb-2">
+                로그인하면 학습 기록이 저장되고 수업에 참여할 수 있어요.
+              </p>
+              <Link
+                href="/login"
+                className="text-xs font-semibold text-accent hover:underline"
+              >
+                로그인 / 회원가입 →
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -290,8 +311,20 @@ export default function Home() {
         </div>
 
         <div className="flex items-center gap-2">
-          {profile && (
-            <span className="text-xs font-semibold text-ink">{profile.name}</span>
+          {profile ? (
+            <>
+              <span className="text-xs font-semibold text-ink">{profile.name}</span>
+              <button
+                onClick={async () => { await signOut(); router.replace("/login"); }}
+                className="text-xs text-ink-soft hover:text-ink px-2 py-1 border border-line rounded-full transition-colors"
+              >
+                로그아웃
+              </button>
+            </>
+          ) : (
+            <Link href="/login" className="text-xs font-semibold text-accent hover:underline px-1">
+              로그인
+            </Link>
           )}
           {/* 다크모드 토글 */}
           <button
@@ -301,12 +334,6 @@ export default function Home() {
             aria-label={isDark ? "라이트 모드" : "다크 모드"}
           >
             {isDark ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
-          <button
-            onClick={async () => { await signOut(); router.push("/login"); }}
-            className="text-xs text-ink-soft hover:text-ink px-2 py-1 border border-line rounded-full transition-colors"
-          >
-            로그아웃
           </button>
         </div>
       </header>
