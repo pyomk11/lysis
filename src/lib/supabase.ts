@@ -345,7 +345,7 @@ export async function getStudentSessions(userId: string): Promise<SessionSummary
   if (error || !sessions) return [];
 
   // 강의명 맵
-  const classIds = [...new Set(sessions.map((s) => s.class_id).filter(Boolean))];
+  const classIds = Array.from(new Set(sessions.map((s) => s.class_id).filter(Boolean)));
   const classMap: Record<string, string> = {};
   if (classIds.length > 0) {
     const { data: classes } = await supabase
