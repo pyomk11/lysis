@@ -43,22 +43,29 @@ export default function ProgressPage() {
   const [sessions, setSessions] = useState<SessionSummary[]>([]);
   const [topConcepts, setTopConcepts] = useState<TopConcept[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
-      const user = await getCurrentUser();
-      if (!user) { router.replace("/login"); return; }
-      const p = await getProfile(user.id);
-      if (!p || p.role !== "student") { router.replace("/app"); return; }
-      setProfile(p);
+      try {
+        const user = await getCurrentUser();
+        if (!user) { router.replace("/login"); return; }
+        const p = await getProfile(user.id);
+        if (!p || p.role !== "student") { router.replace("/app"); return; }
+        setProfile(p);
 
-      const [sess, concepts] = await Promise.all([
-        getStudentSessions(user.id),
-        getStudentTopConcepts(user.id),
-      ]);
-      setSessions(sess);
-      setTopConcepts(concepts);
-      setLoading(false);
+        const [sess, concepts] = await Promise.all([
+          getStudentSessions(user.id),
+          getStudentTopConcepts(user.id),
+        ]);
+        setSessions(sess);
+        setTopConcepts(concepts);
+        setLoading(false);
+      } catch (e) {
+        console.error("학습 기록 로드 오류:", e);
+        setError("학습 기록을 불러오는 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.");
+        setLoading(false);
+      }
     })();
   }, [router]);
 
@@ -74,8 +81,31 @@ export default function ProgressPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen" style={{ background: "#FBF9F6" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", background: "#FBF9F6" }}>
         <p style={{ color: "#6B6863" }}>학습 기록을 불러오는 중...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh", background: "#FBF9F6", gap: 16, padding: "0 24px", textAlign: "center" }}>
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#E8834B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+        <p style={{ color: "#2B2B2B", fontWeight: 600, fontSize: 15 }}>오류가 발생했어요</p>
+        <p style={{ color: "#6B6863", fontSize: 13, maxWidth: 280 }}>{error}</p>
+        <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
+          <button
+            onClick={() => { setError(null); setLoading(true); window.location.reload(); }}
+            style={{ fontSize: 13, fontWeight: 600, color: "white", background: "#2B2B2B", border: "none", borderRadius: 999, padding: "8px 20px", cursor: "pointer" }}
+          >
+            다시 시도
+          </button>
+          <Link href="/app" style={{ fontSize: 13, fontWeight: 600, color: "#6B6863", border: "1px solid #E8E2D8", borderRadius: 999, padding: "8px 20px", textDecoration: "none" }}>
+            학습으로 돌아가기
+          </Link>
+        </div>
       </div>
     );
   }

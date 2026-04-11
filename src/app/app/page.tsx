@@ -42,23 +42,28 @@ export default function Home() {
   // 인증 확인
   useEffect(() => {
     (async () => {
-      const user = await getCurrentUser();
-      if (user) {
-        const p = await getProfile(user.id);
-        if (p?.role === "teacher") {
-          router.replace("/dashboard");
+      try {
+        const user = await getCurrentUser();
+        if (user) {
+          const p = await getProfile(user.id);
+          if (p?.role === "teacher") {
+            router.replace("/dashboard");
+            return;
+          }
+          if (p) setProfile(p);
+          setAuthChecked(true);
           return;
         }
-        if (p) setProfile(p);
-        setAuthChecked(true);
-        return;
-      }
-      // 비로그인 — guest 파라미터 있으면 허용 (초대코드 화면 스킵, DB 저장 없음)
-      const isGuest = new URLSearchParams(window.location.search).get("guest") === "true";
-      if (isGuest) {
-        setJoinStep("ready"); // 초대코드 화면 스킵
-        setAuthChecked(true);
-      } else {
+        // 비로그인 — guest 파라미터 있으면 허용 (초대코드 화면 스킵, DB 저장 없음)
+        const isGuest = new URLSearchParams(window.location.search).get("guest") === "true";
+        if (isGuest) {
+          setJoinStep("ready"); // 초대코드 화면 스킵
+          setAuthChecked(true);
+        } else {
+          router.replace("/login");
+        }
+      } catch (e) {
+        console.error("인증 확인 오류:", e);
         router.replace("/login");
       }
     })();
@@ -376,6 +381,14 @@ export default function Home() {
             </span>
           )}
         </button>
+        {profile && (
+          <Link
+            href="/progress"
+            className="flex-1 py-2.5 text-xs font-semibold text-ink-soft hover:text-ink transition-colors text-center"
+          >
+            내 기록
+          </Link>
+        )}
       </div>
 
       {/* 메인 콘텐츠 — 에디터(좌) + 채팅(우) */}
