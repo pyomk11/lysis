@@ -6,6 +6,7 @@ import type { ChatMessage, ExecutionResult } from "@/types";
 import Editor from "@/components/Editor";
 import Chat from "@/components/Chat";
 import { Play, RotateCcw, Moon, Sun } from "lucide-react";
+import { createSession } from "@/lib/supabase";
 
 const DEFAULT_CODE = `# 여기에 Python 코드를 작성하세요
 # 예: 리스트에서 중복을 제거하는 함수를 만들어보세요
@@ -24,6 +25,7 @@ export default function Home() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isDark, setIsDark] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const pyodideRef = useRef<any>(null);
 
@@ -31,6 +33,13 @@ export default function Home() {
   useEffect(() => {
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     setIsDark(prefersDark);
+  }, []);
+
+  // 학습 세션 시작
+  useEffect(() => {
+    createSession().then((id) => {
+      if (id) setSessionId(id);
+    });
   }, []);
 
   // 다크모드 토글 시 <html>에 class 적용
@@ -91,6 +100,7 @@ export default function Home() {
             code,
             executionResult: output || undefined,
             history: messages.slice(-10),
+            sessionId: sessionId ?? undefined,
           }),
         });
 

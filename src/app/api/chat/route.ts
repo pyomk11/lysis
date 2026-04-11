@@ -6,6 +6,11 @@ import {
   SOCRATIC_PROMPT,
 } from "@/lib/prompts";
 import type { GuardrailResult, Diagnosis, ChatMessage } from "@/types";
+import {
+  saveMessage,
+  saveInsight,
+  saveGuardrailLog,
+} from "@/lib/supabase";
 
 // Edge Runtime 제거 — Node.js Runtime 사용 (Gemini SDK 호환)
 
@@ -30,11 +35,12 @@ export async function POST(request: NextRequest) {
     const guardrailModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
 
     const body = await request.json();
-    const { message, code, executionResult, history } = body as {
+    const { message, code, executionResult, history, sessionId } = body as {
       message: string;
       code?: string;
       executionResult?: string;
       history?: ChatMessage[];
+      sessionId?: string;
     };
 
     if (!message?.trim()) {
@@ -44,12 +50,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // ─── 학생 메시지 저장 ───
+    if (sessionId) {
+      await saveMessage({
+        sessionId,
+        role: "user",
+        content: message,
+        codeContext: code,
+        executionResult,
+      });
+    }
+
     // ─── 1단계: 가드레일 ───
     console.log("[1/3] 가드레일 시작...");
 
     const guardrailResult = await runGuardrail(guardrailModel, message);
 
     if (!guardrailResult.allowed) {
+      // 가드레일 차단 기록
+      if (sessionId) {
+        await saveGuardrailLog({
+          sessionId,
+          blockedMessage: message,
+          reason: guardrailResult.reason,
+        });
+      }
       return NextResponse.json({
         role: "assistant",
         content: `${guardrailResult.reason}\n\n💡 ${guardrailResult.suggestion}`,
@@ -81,6 +106,29 @@ export async function POST(request: NextRequest) {
     );
 
     console.log("✅ 응답 완료");
+
+    // ─── AI 응답 + 인사이트 저장 ───
+    if (sessionId) {
+      const msgId = await saveMessage({
+        sessionId,
+        role: "assistant",
+        content: responseText,
+        hintLevel: diagnosis.suggestedHintLevel,
+        codeContext: code,
+      });
+
+      if (diagnosis.missingConcept && diagnosis.missingConcept !== "불명") {
+        await saveInsight({
+          sessionId,
+          messageId: msgId ?? undefined,
+          concept: diagnosis.missingConcept,
+          difficulty:
+            diagnosis.suggestedHintLevel === "L1" ? "low"
+            : diagnosis.suggestedHintLevel === "L2" ? "medium"
+            : "high",
+        });
+      }
+    }
 
     return NextResponse.json({
       role: "assistant",

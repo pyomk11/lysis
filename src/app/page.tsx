@@ -96,7 +96,7 @@ export default function LandingPage() {
           </div>
           <div className="features">
             {[
-              {Icon:Zap, h:"브라우저 속 Python 실행", p:"설치 없이 지금 바로 코드를 돌려볼 수 있어요. Pyodide 덕분에 서버 왕복 없이 즉시 실행됩니다."},
+              {Icon:Zap, h:"브라우저 속 Python 실행", p:"설치 없이 지금 바로 코드를 돌려볼 수 있어요. Pyodide로 서버 왕복 없이 즉시 실행됩니다."},
               {Icon:MessageCircle, h:"소크라테스식 대화 엔진", p:"정답을 알려주는 대신, \"어디서부터 막혔어요?\"라고 되물으며 사고 과정을 이끌어냅니다."},
               {Icon:SlidersHorizontal, h:"3단계 힌트 시스템", p:"L1 개념 환기 → L2 방향 제시 → L3 의사코드. 너무 많지도, 너무 적지도 않게 필요한 만큼만."},
               {Icon:ShieldCheck, h:"답 복붙 가드레일", p:"\"답만 알려주세요\" 같은 요청은 정중히 거절합니다. 학습 윤리를 기본값으로 내장했어요."},
