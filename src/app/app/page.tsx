@@ -218,14 +218,14 @@ export default function Home() {
   if (joinStep === "joining") {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-bg text-ink">
-        <div className="flex items-center gap-2 mb-6">
+        <Link href="/" className="flex items-center gap-2 mb-6 hover:opacity-75 transition-opacity">
           <svg width="48" height="48" viewBox="0 0 120 120" aria-hidden="true">
             <path d="M 60 42 L 30 98" fill="none" stroke="currentColor" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round"/>
             <path d="M 60 42 L 90 98" fill="none" stroke="currentColor" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round"/>
             <path d="M 60 42 C 55 28, 42 18, 32 22" fill="none" stroke="#E8834B" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
           <span className="text-2xl font-bold">Lysis</span>
-        </div>
+        </Link>
         {profile ? (
           <p className="text-ink-soft mb-6">
             안녕하세요, <span className="font-semibold text-ink">{profile.name}</span>님 · 수업 초대코드를 입력하세요
